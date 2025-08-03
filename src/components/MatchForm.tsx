@@ -21,6 +21,7 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [paripesaCode, setParipesaCode] = useState("uvfgt5");
   const [afropariCode, setAfropariCode] = useState("uvfgt5");
+  const [secretBetCode, setSecretBetCode] = useState("uvfgt5");
   const [customDate, setCustomDate] = useState("");
 
   const calculateTotalOdds = (matchList: Match[]) => {
@@ -31,12 +32,14 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
     newMatches: Match[],
     newParipesa?: string,
     newAfropari?: string,
+    newSecretBet?: string,
     newDate?: string
   ) => {
     const slip: BettingSlip = {
       matches: newMatches,
       paripesaCode: newParipesa || paripesaCode,
       afropariCode: newAfropari || afropariCode,
+      secretBetCode: newSecretBet || secretBetCode,
       totalOdds: calculateTotalOdds(newMatches),
       date: newDate !== undefined ? newDate : customDate,
     };
@@ -79,19 +82,43 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
     updateBettingSlip(newMatches);
   };
 
-  const handleCodesUpdate = (field: "paripesa" | "afropari", value: string) => {
+  const handleCodesUpdate = (
+    field: "paripesa" | "afropari" | "secretbet",
+    value: string
+  ) => {
     if (field === "paripesa") {
       setParipesaCode(value);
-      updateBettingSlip(matches, value, afropariCode, customDate);
-    } else {
+      updateBettingSlip(
+        matches,
+        value,
+        afropariCode,
+        secretBetCode,
+        customDate
+      );
+    } else if (field === "afropari") {
       setAfropariCode(value);
-      updateBettingSlip(matches, paripesaCode, value, customDate);
+      updateBettingSlip(
+        matches,
+        paripesaCode,
+        value,
+        secretBetCode,
+        customDate
+      );
+    } else {
+      setSecretBetCode(value);
+      updateBettingSlip(matches, paripesaCode, afropariCode, value, customDate);
     }
   };
 
   const handleDateUpdate = (value: string) => {
     setCustomDate(value);
-    updateBettingSlip(matches, paripesaCode, afropariCode, value);
+    updateBettingSlip(
+      matches,
+      paripesaCode,
+      afropariCode,
+      secretBetCode,
+      value
+    );
   };
 
   return (
@@ -103,7 +130,7 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <Label htmlFor="paripesa" className="text-sm sm:text-base">
                 Paripesa Code
@@ -128,7 +155,19 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
                 className="text-sm sm:text-base"
               />
             </div>
-            <div className="sm:col-span-2 lg:col-span-1">
+            <div>
+              <Label htmlFor="secretbet" className="text-sm sm:text-base">
+                SecretBet Code
+              </Label>
+              <Input
+                id="secretbet"
+                value={secretBetCode}
+                onChange={(e) => handleCodesUpdate("secretbet", e.target.value)}
+                placeholder="Enter SecretBet code"
+                className="text-sm sm:text-base"
+              />
+            </div>
+            <div>
               <Label htmlFor="customDate" className="text-sm sm:text-base">
                 Date (optional)
               </Label>

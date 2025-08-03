@@ -276,7 +276,7 @@ export const BettingSlipPreview = forwardRef<
           height: "80px",
         }}
       >
-        <div className="flex justify-between items-center text-2xl">
+        <div className="flex justify-between items-center text-xl">
           <div>
             <span style={{ fontWeight: "bold" }}>Paripesa:</span>
             <span style={{ fontWeight: "normal" }}>
@@ -287,6 +287,12 @@ export const BettingSlipPreview = forwardRef<
             <span style={{ fontWeight: "bold" }}>Afropari:</span>
             <span style={{ fontWeight: "normal" }}>
               {bettingSlip.afropariCode}
+            </span>
+          </div>
+          <div>
+            <span style={{ fontWeight: "bold" }}>SecretBet:</span>
+            <span style={{ fontWeight: "normal" }}>
+              {bettingSlip.secretBetCode}
             </span>
           </div>
           <div>

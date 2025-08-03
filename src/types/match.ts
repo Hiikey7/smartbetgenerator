@@ -13,6 +13,7 @@ export interface BettingSlip {
   matches: Match[];
   paripesaCode: string;
   afropariCode: string;
+  secretBetCode: string;
   totalOdds: number;
   date?: string;
 }

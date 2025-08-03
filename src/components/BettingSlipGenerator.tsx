@@ -13,6 +13,7 @@ export const BettingSlipGenerator = () => {
     matches: [],
     paripesaCode: "uvfgt5",
     afropariCode: "uvfgt5",
+    secretBetCode: "uvfgt5",
     totalOdds: 1,
     date: "",
   });
@@ -84,9 +85,7 @@ export const BettingSlipGenerator = () => {
 
       // Create download link
       const link = document.createElement("a");
-      link.download = `betting-slip-${
-        new Date().toISOString().split("T")[0]
-      }.png`;
+      link.download = `BetSmart+${new Date().toISOString().split("T")[0]}.png`;
       link.href = canvas.toDataURL("image/png", 1.0);
       link.click();
 
@@ -168,6 +167,12 @@ export const BettingSlipGenerator = () => {
                       <span>Afropari Code:</span>
                       <span className="font-semibold break-all">
                         {bettingSlip.afropariCode}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>SecretBet Code:</span>
+                      <span className="font-semibold break-all">
+                        {bettingSlip.secretBetCode}
                       </span>
                     </div>
                   </div>
