@@ -85,137 +85,16 @@ export const BettingSlipPreview = forwardRef<
       </div>
 
       {/* Social Links Bar */}
-      <div
+      <img
+        src="/socialsbar.png"
+        alt="SmartBets Social Media"
         style={{
-          backgroundColor: "#ec8a2b",
-          color: "#ffffff",
-          fontSize: "20px",
-          fontWeight: "600",
           width: "1080px",
           height: "64px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 40px",
-          boxSizing: "border-box",
+          display: "block",
+          objectFit: "cover",
         }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-          }}
-        >
-          <img
-            src="/telegram.png"
-            alt="Telegram"
-            style={{
-              width: "24px",
-              height: "24px",
-              display: "block",
-            }}
-          />
-          <span
-            style={{
-              fontSize: "20px",
-              fontWeight: "600",
-              color: "#ffffff",
-              whiteSpace: "nowrap",
-            }}
-          >
-            SmartbetsOfficial
-          </span>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-          }}
-        >
-          <img
-            src="/twitter.png"
-            alt="Twitter"
-            style={{
-              width: "24px",
-              height: "24px",
-              display: "block",
-            }}
-          />
-          <span
-            style={{
-              fontSize: "20px",
-              fontWeight: "600",
-              color: "#ffffff",
-              whiteSpace: "nowrap",
-            }}
-          >
-            SmartbetsKe
-          </span>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-          }}
-        >
-          <img
-            src="/whatsapp.png"
-            alt="WhatsApp"
-            style={{
-              width: "24px",
-              height: "24px",
-              display: "block",
-            }}
-          />
-          <span
-            style={{
-              fontSize: "20px",
-              fontWeight: "600",
-              color: "#ffffff",
-              whiteSpace: "nowrap",
-            }}
-          >
-            +254708467323
-          </span>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-          }}
-        >
-          <img
-            src="/web.png"
-            alt="Website"
-            style={{
-              width: "24px",
-              height: "24px",
-              display: "block",
-            }}
-          />
-          <span
-            style={{
-              fontSize: "20px",
-              fontWeight: "600",
-              color: "#ffffff",
-              whiteSpace: "nowrap",
-            }}
-          >
-            www.smartbets.co.ke
-          </span>
-        </div>
-      </div>
+      />
 
       {/* Matches */}
       <div
