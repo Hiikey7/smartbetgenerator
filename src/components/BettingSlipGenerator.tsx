@@ -108,7 +108,10 @@ export const BettingSlipGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-2 sm:p-4">
+    <div
+      className="min-h-screen bg-gray-50 p-2 sm:p-4"
+      style={{ paddingBottom: "0" }}
+    >
       <div className="container mx-auto max-w-7xl">
         <div className="mb-6 sm:mb-8 text-center">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-betting-header mb-2">
@@ -182,7 +185,8 @@ export const BettingSlipGenerator = () => {
                   style={{
                     transform: "scale(0.25)",
                     width: "1080px",
-                    height: "1350px",
+                    height: "337.5px",
+                    marginBottom: "0",
                   }}
                 >
                   <BettingSlipPreview bettingSlip={bettingSlip} />
@@ -217,7 +221,10 @@ export const BettingSlipGenerator = () => {
       </div>
 
       {/* Website Footer with Credits */}
-      <footer className="mt-8 py-4 text-center bg-gray-100 border-t">
+      <footer
+        className="py-4 text-center bg-gray-100 border-t"
+        style={{ marginBottom: "0" }}
+      >
         <div className="text-sm text-gray-600">
           <span>Powered by </span>
           <a
