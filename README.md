@@ -1,111 +1,243 @@
-# SmartBets - Betting Slip Generator
+# SmartBets Betting Slip Generator
 
-## Project Overview
-
-A professional React-based betting slip generator built with TypeScript, Vite, and Tailwind CSS. Create high-quality betting slips for up to 10 matches with support for Paripesa and Afropari betting codes.
+A React application for generating and managing betting slips with MySQL database integration.
 
 ## Features
 
-- **Professional Design**: Clean, modern interface with SmartBets branding
-- **High-Quality Downloads**: 1080x1350 pixel betting slips with 3x rendering scale
-- **Multi-Match Support**: Handle up to 10 matches with dynamic sizing
-- **Betting Code Integration**: Support for both Paripesa and Afropari codes
-- **Social Media Ready**: Built-in social media icons and watermark
-- **Responsive Layout**: Works seamlessly across different devices
+- Create betting slips with up to 10 matches
+- Save betting slips to MySQL database (now with one-click saving)
+- Load previously saved betting slips for editing
+- Download betting slips as images
+- Track match status (won, lost, cancelled) for saved slips
+- Edit match status directly from the saved slips page
+- Responsive design for mobile and desktop
 
-## Technologies Used
+## Prerequisites
 
-This project is built with:
+- Node.js (v14 or higher)
+- MySQL server (v5.7 or higher)
+- npm or yarn
 
-- **Vite** - Fast build tool and development server
-- **TypeScript** - Type-safe JavaScript development
-- **React** - Modern UI library with hooks
-- **Tailwind CSS** - Utility-first CSS framework
-- **html2canvas** - High-quality image generation
-- **shadcn/ui** - Modern component library
+## Setup
 
-## Development Setup
+### 1. Database Setup
 
-### Prerequisites
+1. Ensure MySQL server is installed and running on your system
 
-- Node.js (v16 or higher)
-- npm or yarn package manager
+   - On Windows: Download MySQL Community Server from the official website
+   - On macOS: Use Homebrew (`brew install mysql`) or download from the official website
+   - On Linux: Use your package manager (e.g., `sudo apt install mysql-server` for Ubuntu/Debian)
 
-### Installation
+2. Start the MySQL service if it's not already running
 
-```sh
-# Clone the repository
-git clone <repository-url>
+   - On Windows: `net start mysql` or start from Services
+   - On macOS: `brew services start mysql` or `sudo /usr/local/mysql/support-files/mysql.server start`
+   - On Linux: `sudo systemctl start mysql` or `sudo service mysql start`
 
-# Navigate to project directory
-cd smartbets-betting-slip-generator
+3. Create a MySQL database named `smartbets`
 
-# Install dependencies
-npm install
+   ```sql
+   CREATE DATABASE smartbets;
+   ```
 
-# Start development server
-npm run dev
-```
+4. Create a MySQL user (or use the default root user) and grant privileges
 
-### Available Scripts
+   ```sql
+   CREATE USER 'smartbets_user'@'localhost' IDENTIFIED BY 'your_password';
+   GRANT ALL PRIVILEGES ON smartbets.* TO 'smartbets_user'@'localhost';
+   FLUSH PRIVILEGES;
+   ```
 
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build for production
-- `npm run build:dev` - Build in development mode
-- `npm run preview` - Preview production build locally
-- `npm run lint` - Run ESLint for code quality
+5. Update the `.env` file in the `server` directory with your MySQL credentials:
+   ```env
+   DB_HOST=localhost
+   DB_USER=smartbets_user  # or root
+   DB_PASSWORD=your_password  # or empty if using root without password
+   DB_NAME=smartbets
+   PORT=3001
+   ```
+
+### 2. Backend Setup
+
+1. Navigate to the server directory:
+
+   ```bash
+   cd server
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Update the `.env` file with your MySQL credentials:
+
+   ```env
+   DB_HOST=localhost
+   DB_USER=your_mysql_username
+   DB_PASSWORD=your_mysql_password
+   DB_NAME=smartbets
+   PORT=3001
+   ```
+
+4. Test the database connection:
+
+   ```bash
+   npm run test:db
+   ```
+
+5. Initialize the database schema:
+
+   ```bash
+   npm run init:db
+   ```
+
+6. Start the server:
+
+   ```bash
+   npm start
+   ```
+
+### 3. Frontend Setup
+
+1. From the root directory, install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Running Both Frontend and Backend
+
+To run both the frontend and backend simultaneously:
+
+1. Start the backend server:
+
+   ```bash
+   cd server
+   npm start
+   ```
+
+2. In a separate terminal, start the frontend:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Open your browser to http://localhost:5173 to access the application
+
+## Usage
+
+1. Open the application in your browser (typically http://localhost:5173)
+2. Create a betting slip by adding matches
+3. Use the "Save Slip" button to save your betting slip (no naming required)
+4. Navigate to the "Saved Slips" page to view your saved betting slips
+5. Edit match status directly from the saved slips page using the status buttons
+6. Use the "Download Image" button to save your betting slip as an image
+
+## Creating a Sample Slip
+
+To create a sample betting slip for testing purposes:
+
+1. Make sure the backend dependencies are installed:
+
+   ```bash
+   cd server
+   npm install
+   ```
+
+2. Initialize the database schema:
+
+   ```bash
+   npm run init:db
+   ```
+
+3. Make sure the backend server is running
+4. In a new terminal, run:
+   ```bash
+   npm run create-sample
+   ```
+
+This will create a sample betting slip with three matches and different statuses (won, lost, cancelled) that you can view in the "Saved Slips" section of the application.
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+1. **"Failed to fetch" errors**: This usually means the backend server is not running. Make sure to:
+
+   - Start MySQL server on your system
+   - Run `npm start` in the `server` directory
+   - Check that the server is running on port 3001
+
+2. **Database connection errors**:
+
+   - Verify MySQL is installed and running
+   - Check that the database credentials in `server/.env` are correct
+   - Ensure the `smartbets` database exists
+   - Run `npm run test:db` to test the database connection
+
+3. **"EADDRINUSE" error when starting the server**:
+
+   - Another process is already using port 3001
+   - Change the PORT in `server/.env` to a different port (e.g., 3002)
+   - Or stop the process using port 3001:
+     - On Windows: `netstat -ano | findstr :3001` then `taskkill /PID <PID> /F`
+     - On macOS/Linux: `lsof -i :3001` then `kill -9 <PID>`
+
+4. **Frontend not connecting to backend**:
+
+   - Ensure both frontend and backend are running
+   - Check that the API calls in `src/components/SaveLoadSlips.tsx` and `src/pages/SavedSlips.tsx` point to the correct backend URL (`http://localhost:3001`)
+   - Check browser console for CORS errors (should be handled by the backend)
+
+5. **Empty saved slips page**:
+   - This is normal when no slips have been saved yet
+   - Create and save a betting slip first
+
+## API Endpoints
+
+- `GET /api/betting-slips` - Get all betting slips
+- `POST /api/betting-slips` - Save a new betting slip
+- `GET /api/betting-slips/:id` - Get a specific betting slip
+- `PUT /api/betting-slips/:id` - Update a betting slip
+- `DELETE /api/betting-slips/:id` - Delete a betting slip
+
+## Testing
+
+- `npm run test:db` - Test database connection
+- `npm run test:api` - Test all API endpoints
+- `npm run init:db` - Initialize database schema
 
 ## Project Structure
 
 ```
-src/
-├── components/
-│   ├── BettingSlipGenerator.tsx    # Main generator component
-│   ├── BettingSlipPreview.tsx      # Preview and download logic
-│   ├── MatchForm.tsx               # Match input form
-│   └── ui/                         # Reusable UI components
-├── types/
-│   └── match.ts                    # TypeScript interfaces
-├── hooks/                          # Custom React hooks
-├── lib/                            # Utility functions
-└── pages/                          # Page components
-
-public/
-├── smartbetlogo.png               # SmartBets logo
-├── watermark.png                  # Watermark overlay
-├── telegram.png                   # Social media icons
-├── twitter.png
-└── web.png
+smartbetgenerator/
+├── server/                 # Backend server
+│   ├── config/             # Database configuration
+│   ├── controllers/        # API controllers
+│   ├── database/           # Database schema
+│   ├── models/             # Data models
+│   ├── routes/             # API routes
+│   ├── .env                # Environment variables
+│   └── server.js           # Server entry point
+├── src/                    # Frontend source
+│   ├── components/         # React components
+│   ├── types/              # TypeScript types
+│   └── pages/              # Page components
+└── public/                 # Static assets
 ```
 
-## Usage
+## Technologies Used
 
-1. **Add Matches**: Enter team names, odds, and match details
-2. **Set Betting Codes**: Add Paripesa and/or Afropari codes
-3. **Set Date**: Choose the betting slip date
-4. **Preview**: View the formatted betting slip
-5. **Download**: Generate and download high-quality image
-
-## Deployment
-
-The project can be deployed to any static hosting service:
-
-- **Vercel**: Connect repository and deploy automatically
-- **Netlify**: Drag and drop build folder or connect Git
-- **GitHub Pages**: Use GitHub Actions for automated deployment
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-feature`)
-3. Commit changes (`git commit -am 'Add new feature'`)
-4. Push to branch (`git push origin feature/new-feature`)
-5. Create a Pull Request
-
-## License
-
-This project is proprietary software developed for SmartBets.
-
-## Contact
-
-For questions or support, contact SmartBets team.
+- React with TypeScript
+- Vite for build tooling
+- MySQL for database
+- Express.js for backend
+- Tailwind CSS for styling
+- shadcn/ui components

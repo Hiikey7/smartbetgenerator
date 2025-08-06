@@ -5,20 +5,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Eye } from "lucide-react";
 import { MatchForm } from "./MatchForm";
 import { BettingSlipPreview } from "./BettingSlipPreview";
+import { SaveSlips } from "./SaveLoadSlips";
 import { BettingSlip } from "@/types/match";
 import { useToast } from "@/hooks/use-toast";
 
-export const BettingSlipGenerator = () => {
-  const [bettingSlip, setBettingSlip] = useState<BettingSlip>({
-    matches: [],
-    paripesaCode: "uvfgt5",
-    afropariCode: "uvfgt5",
-    secretBetCode: "uvfgt5",
-    totalOdds: 1,
-    date: "",
-  });
+interface BettingSlipGeneratorProps {
+  initialSlip?: BettingSlip | null;
+}
+
+export const BettingSlipGenerator = ({
+  initialSlip,
+}: BettingSlipGeneratorProps) => {
+  const [bettingSlip, setBettingSlip] = useState<BettingSlip>(
+    initialSlip || {
+      matches: [],
+      paripesaCode: "uvfgt5",
+      afropariCode: "uvfgt5",
+      secretBetCode: "uvfgt5",
+      totalOdds: 1,
+      date: "",
+      name: "",
+    }
+  );
   const [showPreview, setShowPreview] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const downloadRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -49,9 +60,14 @@ export const BettingSlipGenerator = () => {
       // Wait for layout to settle
       await new Promise((resolve) => setTimeout(resolve, 500));
 
+      // Determine image dimensions based on number of matches
+      const isFiveOrFewerMatches = bettingSlip.matches.length <= 5;
+      const imageWidth = 1080;
+      const imageHeight = isFiveOrFewerMatches ? 1080 : 1350;
+
       const canvas = await html2canvas(downloadRef.current, {
-        width: 1080,
-        height: 1350,
+        width: imageWidth,
+        height: imageHeight,
         scale: 3,
         useCORS: true,
         backgroundColor: "#1a1a2e",
@@ -112,66 +128,78 @@ export const BettingSlipGenerator = () => {
       style={{ paddingBottom: "0" }}
     >
       <div className="container mx-auto max-w-7xl">
-        <div className="mb-6 sm:mb-8 text-center">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-betting-header mb-2">
+        <div className="mb-4 sm:mb-6 text-center">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-betting-header mb-1">
             Smart<span className="text-betting-orange">Bets</span> Generator
           </h1>
-          <p className="text-base sm:text-lg text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Create betting slips with up to 10 matches
           </p>
         </div>
         {/* Mobile Layout: Sequential order, Desktop: Grid layout */}
-        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
           {/* Left Column - Form Section, Download Button, and Summary */}
           <div className="space-y-4 sm:space-y-6">
-            <MatchForm onBettingSlipChange={setBettingSlip} />
+            <MatchForm
+              onBettingSlipChange={(slip) => {
+                setBettingSlip(slip);
+                setIsSaved(false);
+              }}
+              initialSlip={initialSlip}
+            />
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <SaveSlips
+                currentBettingSlip={bettingSlip}
+                onSlipSaved={() => setIsSaved(true)}
+              />
               <Button
                 onClick={handleDownload}
                 disabled={bettingSlip.matches.length === 0 || isGenerating}
-                className="flex items-center justify-center gap-2 w-full sm:w-auto"
+                className="flex items-center justify-center gap-1 w-full sm:w-auto h-9 text-sm"
               >
-                <Download className="w-4 h-4" />
-                {isGenerating ? "Generating..." : "Download Image"}
+                <Download className="w-3 h-3" />
+                {isGenerating ? "Generating..." : "Download"}
               </Button>
             </div>
 
             {/* Summary Section - Shows after matches */}
             {bettingSlip.matches.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg sm:text-xl">Summary</CardTitle>
+              <Card className="border border-gray-200 shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base sm:text-lg">
+                    Summary
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm sm:text-base">
+                <CardContent className="py-2">
+                  <div className="space-y-1 text-xs sm:text-sm">
                     <div className="flex justify-between">
                       <span>Total Matches:</span>
-                      <span className="font-semibold">
+                      <span className="font-medium">
                         {bettingSlip.matches.length}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Total Odds:</span>
-                      <span className="font-semibold text-betting-orange">
+                      <span className="font-medium text-betting-orange">
                         {bettingSlip.totalOdds.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Paripesa Code:</span>
-                      <span className="font-semibold break-all">
+                      <span className="font-medium break-all">
                         {bettingSlip.paripesaCode}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Afropari Code:</span>
-                      <span className="font-semibold break-all">
+                      <span className="font-medium break-all">
                         {bettingSlip.afropariCode}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>SecretBet Code:</span>
-                      <span className="font-semibold break-all">
+                      <span className="font-medium break-all">
                         {bettingSlip.secretBetCode}
                       </span>
                     </div>
@@ -198,10 +226,10 @@ export const BettingSlipGenerator = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-48 sm:h-64 lg:h-96 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 w-full">
+              <div className="flex items-center justify-center h-32 sm:h-48 lg:h-64 bg-gray-100 rounded border border-dashed border-gray-300 w-full">
                 <div className="text-center px-4">
-                  <Eye className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 text-sm sm:text-base">
+                  <Eye className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-500 text-xs sm:text-sm">
                     Add matches to see your betting slip preview
                   </p>
                 </div>
@@ -227,16 +255,16 @@ export const BettingSlipGenerator = () => {
 
       {/* Website Footer with Credits */}
       <footer
-        className="py-4 text-center bg-gray-100 border-t"
+        className="py-3 text-center bg-gray-100 border-t"
         style={{ marginBottom: "0" }}
       >
-        <div className="text-sm text-gray-600">
+        <div className="text-xs text-gray-600">
           <span>Powered by </span>
           <a
             href="https://wa.me/message/5MJVAG2CZN25M1"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold hover:underline"
+            className="font-medium hover:underline"
             style={{ color: "#ec8a2b" }}
           >
             Stanpixels Creatives

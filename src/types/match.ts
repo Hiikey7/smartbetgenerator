@@ -7,6 +7,7 @@ export interface Match {
   awayTeam: string;
   websiteUrl: string;
   odds: number;
+  status?: "won" | "lost" | "cancelled"; // Add status field with optional values
 }
 
 export interface BettingSlip {
@@ -16,4 +17,5 @@ export interface BettingSlip {
   secretBetCode: string;
   totalOdds: number;
   date?: string;
+  name?: string;
 }

@@ -3,12 +3,13 @@ import { BettingSlip } from "@/types/match";
 
 interface BettingSlipPreviewProps {
   bettingSlip: BettingSlip;
+  showStatus?: boolean;
 }
 
 export const BettingSlipPreview = forwardRef<
   HTMLDivElement,
   BettingSlipPreviewProps
->(({ bettingSlip }, ref) => {
+>(({ bettingSlip, showStatus = false }, ref) => {
   const formatDate = () => {
     let dateToFormat: Date;
 
@@ -30,11 +31,13 @@ export const BettingSlipPreview = forwardRef<
   return (
     <div
       ref={ref}
-      className="w-[1080px] h-[1350px] relative overflow-hidden mx-auto"
+      className="w-full max-w-[1080px] relative overflow-hidden mx-auto"
       style={{
         fontFamily: "Arial, Helvetica, sans-serif",
         background:
           "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+        height: bettingSlip.matches.length <= 5 ? "100%" : "100%",
+        minHeight: bettingSlip.matches.length <= 5 ? "1080px" : "1350px",
       }}
     >
       {/* Watermark */}
@@ -89,12 +92,29 @@ export const BettingSlipPreview = forwardRef<
         src="/socialsbar.png"
         alt="SmartBets Social Media"
         style={{
-          width: "1080px",
-          height: "64px",
+          width: "100%",
+          maxWidth: "1080px",
+          height: "auto",
           display: "block",
           objectFit: "cover",
         }}
       />
+
+      {/* Slip Name */}
+      {bettingSlip.name && (
+        <div
+          className="px-8 py-4 text-center"
+          style={{
+            backgroundColor: "#ec8a2b",
+            color: "#ffffff",
+            fontSize: "32px",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+          }}
+        >
+          {bettingSlip.name}
+        </div>
+      )}
 
       {/* Matches */}
       <div
@@ -102,7 +122,7 @@ export const BettingSlipPreview = forwardRef<
         style={{
           position: "relative",
           zIndex: 2,
-          marginBottom: "160px",
+          marginBottom: bettingSlip.matches.length <= 5 ? "80px" : "160px",
         }}
       >
         {bettingSlip.matches.map((match, index) => {
@@ -163,15 +183,16 @@ export const BettingSlipPreview = forwardRef<
                   "0 8px 25px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2)",
                 border: "1px solid rgba(255, 255, 255, 0.1)",
                 borderRadius: "15px",
+                position: "relative",
               }}
             >
               {/* Left section with country and time */}
               <div
-                className="text-white px-6 flex items-center justify-center flex-shrink-0"
+                className="text-white px-4 flex items-center justify-center flex-shrink-0"
                 style={{
                   backgroundColor: "#ec8a2b",
-                  minWidth: "140px",
-                  width: "140px",
+                  minWidth: "100px",
+                  width: "20%",
                   borderRadius: "15px 0 0 15px",
                 }}
               >
@@ -226,10 +247,10 @@ export const BettingSlipPreview = forwardRef<
 
               {/* Website URL section */}
               <div
-                className={`px-4 ${paddingClass} flex items-center justify-center flex-shrink-0`}
+                className={`px-2 ${paddingClass} flex items-center justify-center flex-shrink-0`}
                 style={{
-                  minWidth: "200px",
-                  width: "200px",
+                  minWidth: "150px",
+                  width: "25%",
                   backgroundColor: "#ffffff",
                 }}
               >
@@ -237,67 +258,106 @@ export const BettingSlipPreview = forwardRef<
                   className={`${urlTextSize} font-semibold text-center leading-tight`}
                   style={{
                     color: "#1f2937",
-                    whiteSpace: "nowrap",
+                    whiteSpace: "normal",
+                    wordBreak: "break-word",
                   }}
                 >
                   {match.websiteUrl}
                 </div>
               </div>
 
-              {/* Right section with odds */}
+              {/* Odds section */}
               <div
-                className="text-white px-6 flex items-center justify-center flex-shrink-0"
+                className="text-white px-4 flex items-center justify-center flex-shrink-0"
                 style={{
                   backgroundColor: "#ec8a2b",
-                  minWidth: "100px",
-                  width: "100px",
-                  borderRadius: "0 15px 15px 0",
+                  minWidth: showStatus ? "60px" : "100px",
+                  width: showStatus ? "10%" : "15%",
+                  borderRadius: showStatus ? "0" : "0 15px 15px 0",
+                  marginRight: showStatus ? "40px" : "0",
                 }}
               >
                 <div className={`${oddsTextSize} font-black`}>
                   {match.odds.toFixed(2)}
                 </div>
               </div>
+
+              {/* Status section - only shown when showStatus is true */}
+              {showStatus && (
+                <div
+                  className="text-white px-2 flex items-center justify-center"
+                  style={{
+                    position: "absolute",
+                    right: "0px",
+                    top: "0",
+                    bottom: "0",
+                    backgroundColor:
+                      match.status === "won"
+                        ? "#10B981" // green
+                        : match.status === "lost"
+                        ? "#EF4444" // red
+                        : match.status === "cancelled"
+                        ? "#6B7280" // grey
+                        : "#374151", // default grey
+                    minWidth: "40px",
+                    width: "40px",
+                    borderRadius: "0 15px 15px 0",
+                  }}
+                >
+                  <div className="text-2xl font-bold">
+                    {match.status === "won"
+                      ? "✓"
+                      : match.status === "lost"
+                      ? "✗"
+                      : match.status === "cancelled"
+                      ? "⋯"
+                      : ""}
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
       </div>
 
       {/* Spacer between matches and footer */}
-      <div style={{ height: "40px" }}></div>
+      <div
+        style={{ height: bettingSlip.matches.length < 5 ? "40px" : "40px" }}
+      ></div>
 
       {/* Footer */}
       <div
-        className="absolute bottom-0 left-0 right-0 text-white px-8 py-6"
+        className="absolute bottom-0 left-0 right-0 text-white px-6 py-4"
         style={{
           background: "linear-gradient(135deg, #374151 0%, #1f2937 100%)",
           boxShadow: "0 -4px 15px rgba(0, 0, 0, 0.3)",
           zIndex: 3,
-          height: "80px",
+          height: "auto",
+          minHeight: "70px",
         }}
       >
-        <div className="flex justify-between items-center text-xl">
-          <div>
+        <div className="flex flex-wrap justify-between items-center text-base">
+          <div className="mb-2 mr-4">
             <span style={{ fontWeight: "bold" }}>Paripesa:</span>
-            <span style={{ fontWeight: "normal" }}>
+            <span style={{ fontWeight: "normal", marginLeft: "5px" }}>
               {bettingSlip.paripesaCode}
             </span>
           </div>
-          <div>
+          <div className="mb-2 mr-4">
             <span style={{ fontWeight: "bold" }}>Afropari:</span>
-            <span style={{ fontWeight: "normal" }}>
+            <span style={{ fontWeight: "normal", marginLeft: "5px" }}>
               {bettingSlip.afropariCode}
             </span>
           </div>
-          <div>
+          <div className="mb-2 mr-4">
             <span style={{ fontWeight: "bold" }}>SecretBet:</span>
-            <span style={{ fontWeight: "normal" }}>
+            <span style={{ fontWeight: "normal", marginLeft: "5px" }}>
               {bettingSlip.secretBetCode}
             </span>
           </div>
-          <div>
+          <div className="mb-2">
             <span style={{ fontWeight: "bold" }}>Total Odds:</span>
-            <span style={{ fontWeight: "normal" }}>
+            <span style={{ fontWeight: "normal", marginLeft: "5px" }}>
               {bettingSlip.totalOdds.toFixed(2)}
             </span>
           </div>

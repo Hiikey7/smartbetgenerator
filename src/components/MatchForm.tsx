@@ -15,14 +15,34 @@ import { Match, BettingSlip } from "@/types/match";
 
 interface MatchFormProps {
   onBettingSlipChange: (slip: BettingSlip) => void;
+  initialSlip?: BettingSlip | null;
 }
 
-export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [paripesaCode, setParipesaCode] = useState("uvfgt5");
-  const [afropariCode, setAfropariCode] = useState("uvfgt5");
-  const [secretBetCode, setSecretBetCode] = useState("uvfgt5");
-  const [customDate, setCustomDate] = useState("");
+export const MatchForm = ({
+  onBettingSlipChange,
+  initialSlip,
+}: MatchFormProps) => {
+  const [matches, setMatches] = useState<Match[]>(initialSlip?.matches || []);
+  const [paripesaCode, setParipesaCode] = useState(
+    initialSlip?.paripesaCode || "uvfgt5"
+  );
+  const [afropariCode, setAfropariCode] = useState(
+    initialSlip?.afropariCode || "uvfgt5"
+  );
+  const [secretBetCode, setSecretBetCode] = useState(
+    initialSlip?.secretBetCode || "uvfgt5"
+  );
+  const [customDate, setCustomDate] = useState(initialSlip?.date || "");
+  const [name, setName] = useState(initialSlip?.name || "");
+  const [useCustomName, setUseCustomName] = useState(false);
+
+  const predefinedSlipNames = [
+    "10 odds Combo",
+    "Golden ticket",
+    "2 ODDS ROLLOVER",
+    "1000 CRAZY ODDS",
+    "100 MULTIBET ODDS",
+  ];
 
   const calculateTotalOdds = (matchList: Match[]) => {
     return matchList.reduce((total, match) => total * match.odds, 1);
@@ -33,7 +53,8 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
     newParipesa?: string,
     newAfropari?: string,
     newSecretBet?: string,
-    newDate?: string
+    newDate?: string,
+    newName?: string
   ) => {
     const slip: BettingSlip = {
       matches: newMatches,
@@ -42,6 +63,7 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
       secretBetCode: newSecretBet || secretBetCode,
       totalOdds: calculateTotalOdds(newMatches),
       date: newDate !== undefined ? newDate : customDate,
+      name: newName !== undefined ? newName : name,
     };
     onBettingSlipChange(slip);
   };
@@ -60,14 +82,28 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
       };
       const newMatches = [...matches, newMatch];
       setMatches(newMatches);
-      updateBettingSlip(newMatches);
+      updateBettingSlip(
+        newMatches,
+        paripesaCode,
+        afropariCode,
+        secretBetCode,
+        customDate,
+        name
+      );
     }
   };
 
   const removeMatch = (id: string) => {
     const newMatches = matches.filter((match) => match.id !== id);
     setMatches(newMatches);
-    updateBettingSlip(newMatches);
+    updateBettingSlip(
+      newMatches,
+      paripesaCode,
+      afropariCode,
+      secretBetCode,
+      customDate,
+      name
+    );
   };
 
   const updateMatch = (
@@ -79,7 +115,14 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
       match.id === id ? { ...match, [field]: value } : match
     );
     setMatches(newMatches);
-    updateBettingSlip(newMatches);
+    updateBettingSlip(
+      newMatches,
+      paripesaCode,
+      afropariCode,
+      secretBetCode,
+      customDate,
+      name
+    );
   };
 
   const handleCodesUpdate = (
@@ -93,7 +136,8 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
         value,
         afropariCode,
         secretBetCode,
-        customDate
+        customDate,
+        name
       );
     } else if (field === "afropari") {
       setAfropariCode(value);
@@ -102,11 +146,19 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
         paripesaCode,
         value,
         secretBetCode,
-        customDate
+        customDate,
+        name
       );
     } else {
       setSecretBetCode(value);
-      updateBettingSlip(matches, paripesaCode, afropariCode, value, customDate);
+      updateBettingSlip(
+        matches,
+        paripesaCode,
+        afropariCode,
+        value,
+        customDate,
+        name
+      );
     }
   };
 
@@ -117,132 +169,189 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
       paripesaCode,
       afropariCode,
       secretBetCode,
-      value
+      value,
+      name
     );
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 relative">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg sm:text-xl">
+    <div className="space-y-3 sm:space-y-4 relative">
+      <Card className="border border-gray-200 shadow-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base sm:text-lg">
             Betting Slip Configuration
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <CardContent className="space-y-3 py-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
             <div>
-              <Label htmlFor="paripesa" className="text-sm sm:text-base">
+              <Label htmlFor="paripesa" className="text-xs sm:text-sm">
                 Paripesa Code
               </Label>
               <Input
                 id="paripesa"
                 value={paripesaCode}
                 onChange={(e) => handleCodesUpdate("paripesa", e.target.value)}
-                placeholder="Enter Paripesa code"
-                className="text-sm sm:text-base"
+                placeholder="Paripesa code"
+                className="text-xs sm:text-sm h-8"
               />
             </div>
             <div>
-              <Label htmlFor="afropari" className="text-sm sm:text-base">
+              <Label htmlFor="afropari" className="text-xs sm:text-sm">
                 Afropari Code
               </Label>
               <Input
                 id="afropari"
                 value={afropariCode}
                 onChange={(e) => handleCodesUpdate("afropari", e.target.value)}
-                placeholder="Enter Afropari code"
-                className="text-sm sm:text-base"
+                placeholder="Afropari code"
+                className="text-xs sm:text-sm h-8"
               />
             </div>
             <div>
-              <Label htmlFor="secretbet" className="text-sm sm:text-base">
+              <Label htmlFor="secretbet" className="text-xs sm:text-sm">
                 SecretBet Code
               </Label>
               <Input
                 id="secretbet"
                 value={secretBetCode}
                 onChange={(e) => handleCodesUpdate("secretbet", e.target.value)}
-                placeholder="Enter SecretBet code"
-                className="text-sm sm:text-base"
+                placeholder="SecretBet code"
+                className="text-xs sm:text-sm h-8"
               />
             </div>
             <div>
-              <Label htmlFor="customDate" className="text-sm sm:text-base">
-                Date (optional)
+              <Label htmlFor="customDate" className="text-xs sm:text-sm">
+                Date
               </Label>
               <Input
                 id="customDate"
                 type="date"
                 value={customDate}
                 onChange={(e) => handleDateUpdate(e.target.value)}
-                placeholder="Leave empty for today's date"
-                className="text-sm sm:text-base"
+                className="text-xs sm:text-sm h-8"
               />
+            </div>
+            <div>
+              <Label htmlFor="slipName" className="text-xs sm:text-sm">
+                Slip Name
+              </Label>
+              {useCustomName ? (
+                <Input
+                  id="slipName"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    updateBettingSlip(
+                      matches,
+                      paripesaCode,
+                      afropariCode,
+                      secretBetCode,
+                      customDate,
+                      e.target.value
+                    );
+                  }}
+                  placeholder="Enter custom name"
+                  className="text-xs sm:text-sm h-8"
+                />
+              ) : (
+                <Select
+                  value={name}
+                  onValueChange={(value) => {
+                    setName(value);
+                    updateBettingSlip(
+                      matches,
+                      paripesaCode,
+                      afropariCode,
+                      secretBetCode,
+                      customDate,
+                      value
+                    );
+                  }}
+                >
+                  <SelectTrigger className="text-xs sm:text-sm h-8">
+                    <SelectValue placeholder="Select a predefined name" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {predefinedSlipNames.map((predefinedName) => (
+                      <SelectItem key={predefinedName} value={predefinedName}>
+                        {predefinedName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              <Button
+                variant="link"
+                className="text-xs p-0 h-auto mt-1"
+                onClick={() => setUseCustomName(!useCustomName)}
+              >
+                {useCustomName ? "Use predefined names" : "Use custom name"}
+              </Button>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <h3 className="text-base sm:text-lg font-semibold">
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          <h3 className="text-sm sm:text-base font-medium">
             Matches ({matches.length}/10)
           </h3>
           <Button
             onClick={addMatch}
             disabled={matches.length >= 10}
-            className="flex items-center justify-center gap-2 w-full sm:w-auto"
+            className="flex items-center justify-center gap-1 w-full sm:w-auto h-8 text-xs"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3 h-3" />
             Add Match
           </Button>
         </div>
 
         {matches.map((match, index) => (
-          <Card key={match.id} className="rounded-2xl border-2">
-            <CardHeader className="pb-3 sm:pb-4">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                <CardTitle className="text-base sm:text-lg">
+          <Card key={match.id} className="border border-gray-200 shadow-sm">
+            <CardHeader className="pb-2">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                <CardTitle className="text-sm sm:text-base">
                   Match {index + 1}
                 </CardTitle>
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={() => removeMatch(match.id)}
-                  className="flex items-center justify-center gap-2 w-full sm:w-auto"
+                  className="flex items-center justify-center gap-1 w-full sm:w-auto h-7 text-xs"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3 h-3" />
                   Remove
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <CardContent className="space-y-3 py-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 <div>
-                  <Label className="text-sm sm:text-base">Country</Label>
+                  <Label className="text-xs sm:text-sm">Country</Label>
                   <Input
                     value={match.country}
                     onChange={(e) =>
                       updateMatch(match.id, "country", e.target.value)
                     }
                     placeholder="e.g., Bel"
-                    className="text-sm sm:text-base"
+                    className="text-xs sm:text-sm h-8"
                   />
                 </div>
                 <div>
-                  <Label className="text-sm sm:text-base">Time</Label>
+                  <Label className="text-xs sm:text-sm">Time</Label>
                   <Input
                     value={match.time}
                     onChange={(e) =>
                       updateMatch(match.id, "time", e.target.value)
                     }
                     placeholder="e.g., 19:00"
-                    className="text-sm sm:text-base"
+                    className="text-xs sm:text-sm h-8"
                   />
                 </div>
                 <div className="sm:col-span-2 lg:col-span-1">
-                  <Label className="text-sm sm:text-base">Odds</Label>
+                  <Label className="text-xs sm:text-sm">Odds</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -255,42 +364,42 @@ export const MatchForm = ({ onBettingSlipChange }: MatchFormProps) => {
                       )
                     }
                     placeholder="e.g., 1.32"
-                    className="text-sm sm:text-base"
+                    className="text-xs sm:text-sm h-8"
                   />
                 </div>
               </div>
               <div>
-                <Label className="text-sm sm:text-base">Pick</Label>
+                <Label className="text-xs sm:text-sm">Pick</Label>
                 <Input
                   value={match.pick}
                   onChange={(e) =>
                     updateMatch(match.id, "pick", e.target.value)
                   }
                   placeholder="e.g., Under 11.5 Corners"
-                  className="text-sm sm:text-base"
+                  className="text-xs sm:text-sm h-8"
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-sm sm:text-base">Home Team</Label>
+                  <Label className="text-xs sm:text-sm">Home Team</Label>
                   <Input
                     value={match.homeTeam}
                     onChange={(e) =>
                       updateMatch(match.id, "homeTeam", e.target.value)
                     }
                     placeholder="e.g., Gent"
-                    className="text-sm sm:text-base"
+                    className="text-xs sm:text-sm h-8"
                   />
                 </div>
                 <div>
-                  <Label className="text-sm sm:text-base">Away Team</Label>
+                  <Label className="text-xs sm:text-sm">Away Team</Label>
                   <Input
                     value={match.awayTeam}
                     onChange={(e) =>
                       updateMatch(match.id, "awayTeam", e.target.value)
                     }
                     placeholder="e.g., UR la louviere Centre"
-                    className="text-sm sm:text-base"
+                    className="text-xs sm:text-sm h-8"
                   />
                 </div>
               </div>
