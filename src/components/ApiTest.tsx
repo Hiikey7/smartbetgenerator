@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { API_ENDPOINTS } from "@/config/api";
 
 export const ApiTest = () => {
   const [status, setStatus] = useState<string>("");
@@ -11,7 +12,7 @@ export const ApiTest = () => {
     setStatus("Testing API connection...");
 
     try {
-      const response = await fetch("http://localhost:3001/api/health");
+      const response = await fetch(API_ENDPOINTS.HEALTH);
       const data = await response.json();
 
       if (response.ok) {

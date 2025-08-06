@@ -193,7 +193,7 @@ This will create a sample betting slip with three matches and different statuses
 4. **Frontend not connecting to backend**:
 
    - Ensure both frontend and backend are running
-   - Check that the API calls in `src/components/SaveLoadSlips.tsx` and `src/pages/SavedSlips.tsx` point to the correct backend URL (`http://localhost:3001`)
+   - Check that the API calls in `src/components/SaveLoadSlips.tsx` and `src/pages/SavedSlips.tsx` point to the correct backend URL (configured via `VITE_API_BASE_URL` environment variable, defaulting to `http://localhost:3001`)
    - Check browser console for CORS errors (should be handled by the backend)
 
 5. **Empty saved slips page**:
@@ -241,3 +241,41 @@ smartbetgenerator/
 - Express.js for backend
 - Tailwind CSS for styling
 - shadcn/ui components
+
+## Deployment
+
+### Frontend Deployment (Vercel)
+
+1. Push all changes to GitHub
+2. Create a new project on Vercel
+3. Connect your GitHub repository
+4. Vercel will automatically detect the Vite project and configure the build settings
+5. Set the build command to `npm run build`
+6. Set the output directory to `dist`
+7. Deploy the project
+
+### Backend Deployment (Heroku/Railway)
+
+1. Create a separate repository for the backend or use a subdirectory
+2. Deploy the backend to a service that supports Node.js servers:
+   - For Heroku:
+     - Create a new app on Heroku
+     - Connect your GitHub repository or use the Heroku CLI
+     - Set the environment variables in the Heroku dashboard:
+       - DB_HOST
+       - DB_USER
+       - DB_PASSWORD
+       - DB_NAME
+       - PORT (Heroku will set this automatically)
+     - Add a Procfile with the content: `web: node server.js`
+   - For Railway:
+     - Create a new project on Railway
+     - Connect your GitHub repository
+     - Railway will automatically detect the Node.js project
+     - Set the environment variables in the Railway dashboard:
+       - DB_HOST
+       - DB_USER
+       - DB_PASSWORD
+       - DB_NAME
+       - PORT (Railway will set this automatically)
+3. Update the frontend environment variable `VITE_API_BASE_URL` to point to your deployed backend URL

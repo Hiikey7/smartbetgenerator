@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
+import { API_ENDPOINTS } from "@/config/api";
 
 interface MatchStatusData {
   date: string;
@@ -30,7 +31,7 @@ const Analytics = () => {
   // Check if backend is running
   const checkBackendHealth = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/health");
+      const response = await fetch(API_ENDPOINTS.HEALTH);
       return response.ok;
     } catch (error) {
       return false;
@@ -49,9 +50,7 @@ const Analytics = () => {
       }
 
       console.log("Fetching analytics data...");
-      const response = await fetch(
-        "http://localhost:3001/api/betting-slips/analytics"
-      );
+      const response = await fetch(API_ENDPOINTS.ANALYTICS);
       console.log("Response status:", response.status);
 
       if (!response.ok) {

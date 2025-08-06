@@ -13,6 +13,7 @@ import {
 import { Save } from "lucide-react";
 import { BettingSlip } from "@/types/match";
 import { useToast } from "@/hooks/use-toast";
+import { API_ENDPOINTS } from "@/config/api";
 
 interface SaveSlipsProps {
   currentBettingSlip: BettingSlip;
@@ -41,7 +42,7 @@ export const SaveSlips = ({
     };
 
     try {
-      const response = await fetch("http://localhost:3001/api/betting-slips", {
+      const response = await fetch(API_ENDPOINTS.BETTING_SLIPS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

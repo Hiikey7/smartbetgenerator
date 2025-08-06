@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BettingSlipModal } from "@/components/BettingSlipModal";
+import { API_ENDPOINTS } from "@/config/api";
 
 interface SavedSlip {
   id: number;
@@ -29,7 +30,7 @@ const SavedSlips = () => {
   // Fetch saved slips from backend
   const fetchSavedSlips = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/betting-slips");
+      const response = await fetch(API_ENDPOINTS.BETTING_SLIPS);
       if (!response.ok) throw new Error("Failed to fetch saved slips");
 
       const result = await response.json();
@@ -62,12 +63,9 @@ const SavedSlips = () => {
   // Delete a saved slip
   const deleteSlip = async (id: number) => {
     try {
-      const response = await fetch(
-        `http://localhost:3001/api/betting-slips/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`${API_ENDPOINTS.BETTING_SLIPS}/${id}`, {
+        method: "DELETE",
+      });
 
       if (!response.ok) throw new Error("Failed to delete betting slip");
 
@@ -114,16 +112,13 @@ const SavedSlips = () => {
       };
 
       // Send update to backend
-      const response = await fetch(
-        `http://localhost:3001/api/betting-slips/${slipId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedSlip.slip),
-        }
-      );
+      const response = await fetch(`${API_ENDPOINTS.BETTING_SLIPS}/${slipId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedSlip.slip),
+      });
 
       if (!response.ok) throw new Error("Failed to update betting slip");
 
