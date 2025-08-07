@@ -2,13 +2,6 @@
 
 A React application for generating and managing betting slips with MySQL database integration.
 
-## Project Structure
-
-This project is organized into two main directories:
-
-- `frontend/` - Contains all frontend code (React application)
-- `backend/` - Contains all backend code (Node.js/Express server)
-
 ## Features
 
 - Create betting slips with up to 10 matches
@@ -55,12 +48,21 @@ This project is organized into two main directories:
    FLUSH PRIVILEGES;
    ```
 
+5. Update the `.env` file in the `server` directory with your MySQL credentials:
+   ```env
+   DB_HOST=localhost
+   DB_USER=smartbets_user  # or root
+   DB_PASSWORD=your_password  # or empty if using root without password
+   DB_NAME=smartbets
+   PORT=3001
+   ```
+
 ### 2. Backend Setup
 
-1. Navigate to the backend directory:
+1. Navigate to the server directory:
 
    ```bash
-   cd backend
+   cd server
    ```
 
 2. Install dependencies:
@@ -99,19 +101,13 @@ This project is organized into two main directories:
 
 ### 3. Frontend Setup
 
-1. Navigate to the frontend directory:
-
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
+1. From the root directory, install dependencies:
 
    ```bash
    npm install
    ```
 
-3. Start the development server:
+2. Start the development server:
    ```bash
    npm run dev
    ```
@@ -123,14 +119,13 @@ To run both the frontend and backend simultaneously:
 1. Start the backend server:
 
    ```bash
-   cd backend
+   cd server
    npm start
    ```
 
 2. In a separate terminal, start the frontend:
 
    ```bash
-   cd frontend
    npm run dev
    ```
 
@@ -152,7 +147,7 @@ To create a sample betting slip for testing purposes:
 1. Make sure the backend dependencies are installed:
 
    ```bash
-   cd backend
+   cd server
    npm install
    ```
 
@@ -169,6 +164,83 @@ To create a sample betting slip for testing purposes:
    ```
 
 This will create a sample betting slip with three matches and different statuses (won, lost, cancelled) that you can view in the "Saved Slips" section of the application.
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+1. **"Failed to fetch" errors**: This usually means the backend server is not running. Make sure to:
+
+   - Start MySQL server on your system
+   - Run `npm start` in the `server` directory
+   - Check that the server is running on port 3001
+
+2. **Database connection errors**:
+
+   - Verify MySQL is installed and running
+   - Check that the database credentials in `server/.env` are correct
+   - Ensure the `smartbets` database exists
+   - Run `npm run test:db` to test the database connection
+
+3. **"EADDRINUSE" error when starting the server**:
+
+   - Another process is already using port 3001
+   - Change the PORT in `server/.env` to a different port (e.g., 3002)
+   - Or stop the process using port 3001:
+     - On Windows: `netstat -ano | findstr :3001` then `taskkill /PID <PID> /F`
+     - On macOS/Linux: `lsof -i :3001` then `kill -9 <PID>`
+
+4. **Frontend not connecting to backend**:
+
+   - Ensure both frontend and backend are running
+   - Check that the API calls in `src/components/SaveLoadSlips.tsx` and `src/pages/SavedSlips.tsx` point to the correct backend URL (configured via `VITE_API_BASE_URL` environment variable, defaulting to `http://localhost:3001`)
+   - Check browser console for CORS errors (should be handled by the backend)
+
+5. **Empty saved slips page**:
+   - This is normal when no slips have been saved yet
+   - Create and save a betting slip first
+
+## API Endpoints
+
+- `GET /api/betting-slips` - Get all betting slips
+- `POST /api/betting-slips` - Save a new betting slip
+- `GET /api/betting-slips/:id` - Get a specific betting slip
+- `PUT /api/betting-slips/:id` - Update a betting slip
+- `DELETE /api/betting-slips/:id` - Delete a betting slip
+
+## Testing
+
+- `npm run test:db` - Test database connection
+- `npm run test:api` - Test all API endpoints
+- `npm run init:db` - Initialize database schema
+
+## Project Structure
+
+```
+smartbetgenerator/
+├── server/                 # Backend server
+│   ├── config/             # Database configuration
+│   ├── controllers/        # API controllers
+│   ├── database/           # Database schema
+│   ├── models/             # Data models
+│   ├── routes/             # API routes
+│   ├── .env                # Environment variables
+│   └── server.js           # Server entry point
+├── src/                    # Frontend source
+│   ├── components/         # React components
+│   ├── types/              # TypeScript types
+│   └── pages/              # Page components
+└── public/                 # Static assets
+```
+
+## Technologies Used
+
+- React with TypeScript
+- Vite for build tooling
+- MySQL for database
+- Express.js for backend
+- Tailwind CSS for styling
+- shadcn/ui components
 
 ## Deployment
 
@@ -207,61 +279,3 @@ This will create a sample betting slip with three matches and different statuses
        - DB_NAME
        - PORT (Railway will set this automatically)
 3. Update the frontend environment variable `VITE_API_BASE_URL` to point to your deployed backend URL
-
-## Troubleshooting
-
-### Common Issues and Solutions
-
-1. **"Failed to fetch" errors**: This usually means the backend server is not running. Make sure to:
-
-   - Start MySQL server on your system
-   - Run `npm start` in the `backend` directory
-   - Check that the server is running on port 3001
-
-2. **Database connection errors**:
-
-   - Verify MySQL is installed and running
-   - Check that the database credentials in `backend/.env` are correct
-   - Ensure the `smartbets` database exists
-   - Run `npm run test:db` to test the database connection
-
-3. **"EADDRINUSE" error when starting the server**:
-
-   - Another process is already using port 3001
-   - Change the PORT in `backend/.env` to a different port (e.g., 3002)
-   - Or stop the process using port 3001:
-     - On Windows: `netstat -ano | findstr :3001` then `taskkill /PID <PID> /F`
-     - On macOS/Linux: `lsof -i :3001` then `kill -9 <PID>`
-
-4. **Frontend not connecting to backend**:
-
-   - Ensure both frontend and backend are running
-   - Check that the API calls in `frontend/components/SaveLoadSlips.tsx` and `frontend/pages/SavedSlips.tsx` point to the correct backend URL (configured via `VITE_API_BASE_URL` environment variable, defaulting to `http://localhost:3001`)
-   - Check browser console for CORS errors (should be handled by the backend)
-
-5. **Empty saved slips page**:
-   - This is normal when no slips have been saved yet
-   - Create and save a betting slip first
-
-## API Endpoints
-
-- `GET /api/betting-slips` - Get all betting slips
-- `POST /api/betting-slips` - Save a new betting slip
-- `GET /api/betting-slips/:id` - Get a specific betting slip
-- `PUT /api/betting-slips/:id` - Update a betting slip
-- `DELETE /api/betting-slips/:id` - Delete a betting slip
-
-## Testing
-
-- `npm run test:db` - Test database connection
-- `npm run test:api` - Test all API endpoints
-- `npm run init:db` - Initialize database schema
-
-## Technologies Used
-
-- React with TypeScript
-- Vite for build tooling
-- MySQL for database
-- Express.js for backend
-- Tailwind CSS for styling
-- shadcn/ui components
