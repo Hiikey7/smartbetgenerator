@@ -170,102 +170,6 @@ To create a sample betting slip for testing purposes:
 
 This will create a sample betting slip with three matches and different statuses (won, lost, cancelled) that you can view in the "Saved Slips" section of the application.
 
-## Deployment
-
-### Frontend Deployment (Vercel)
-
-1. Push all changes to GitHub
-2. Create a new project on Vercel
-3. Connect your GitHub repository
-4. Vercel will automatically detect the Vite project and configure the build settings
-5. Set the build command to `npm run build`
-6. Set the output directory to `dist`
-7. Deploy the project
-
-### Backend Deployment (Heroku/Railway)
-
-1. Create a separate repository for the backend or use a subdirectory
-2. Deploy the backend to a service that supports Node.js servers:
-   - For Heroku:
-     - Create a new app on Heroku
-     - Connect your GitHub repository or use the Heroku CLI
-     - Set the environment variables in the Heroku dashboard:
-       - DB_HOST
-       - DB_USER
-       - DB_PASSWORD
-       - DB_NAME
-       - PORT (Heroku will set this automatically)
-     - Add a Procfile with the content: `web: node server.js`
-   - For Railway:
-     - Create a new project on Railway
-     - Connect your GitHub repository
-     - Railway will automatically detect the Node.js project
-     - Set the environment variables in the Railway dashboard:
-       - DB_HOST
-       - DB_USER
-       - DB_PASSWORD
-       - DB_NAME
-       - PORT (Railway will set this automatically)
-3. Update the frontend environment variable `VITE_API_BASE_URL` to point to your deployed backend URL
-
-## Troubleshooting
-
-### Common Issues and Solutions
-
-1. **"Failed to fetch" errors**: This usually means the backend server is not running. Make sure to:
-
-   - Start MySQL server on your system
-   - Run `npm start` in the `backend` directory
-   - Check that the server is running on port 3001
-
-2. **Database connection errors**:
-
-   - Verify MySQL is installed and running
-   - Check that the database credentials in `backend/.env` are correct
-   - Ensure the `smartbets` database exists
-   - Run `npm run test:db` to test the database connection
-
-3. **"EADDRINUSE" error when starting the server**:
-
-   - Another process is already using port 3001
-   - Change the PORT in `backend/.env` to a different port (e.g., 3002)
-   - Or stop the process using port 3001:
-     - On Windows: `netstat -ano | findstr :3001` then `taskkill /PID <PID> /F`
-     - On macOS/Linux: `lsof -i :3001` then `kill -9 <PID>`
-
-4. **Frontend not connecting to backend**:
-
-   - Ensure both frontend and backend are running
-   - Check that the API calls in `frontend/components/SaveLoadSlips.tsx` and `frontend/pages/SavedSlips.tsx` point to the correct backend URL (configured via `VITE_API_BASE_URL` environment variable, defaulting to `http://localhost:3001`)
-   - Check browser console for CORS errors (should be handled by the backend)
-
-5. **Empty saved slips page**:
-   - This is normal when no slips have been saved yet
-   - Create and save a betting slip first
-
-## API Endpoints
-
-- `GET /api/betting-slips` - Get all betting slips
-- `POST /api/betting-slips` - Save a new betting slip
-- `GET /api/betting-slips/:id` - Get a specific betting slip
-- `PUT /api/betting-slips/:id` - Update a betting slip
-- `DELETE /api/betting-slips/:id` - Delete a betting slip
-
-## Testing
-
-- `npm run test:db` - Test database connection
-- `npm run test:api` - Test all API endpoints
-- `npm run init:db` - Initialize database schema
-
-## Technologies Used
-
-- React with TypeScript
-- Vite for build tooling
-- MySQL for database
-- Express.js for backend
-- Tailwind CSS for styling
-- shadcn/ui components
-
 ## Hosting on Hostinger
 
 ### Project Structure for Hostinger
@@ -413,3 +317,61 @@ We've created an `nginx.conf` file for setting up Nginx as a reverse proxy.
    ```
 
 With these configurations, your application will be ready for deployment on Hostinger VPS hosting. The backend will run on port 3001, and the frontend will be served on port 8080, with Nginx proxying requests appropriately.
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+1. **"Failed to fetch" errors**: This usually means the backend server is not running. Make sure to:
+
+   - Start MySQL server on your system
+   - Run `npm start` in the `backend` directory
+   - Check that the server is running on port 3001
+
+2. **Database connection errors**:
+
+   - Verify MySQL is installed and running
+   - Check that the database credentials in `backend/.env` are correct
+   - Ensure the `smartbets` database exists
+   - Run `npm run test:db` to test the database connection
+
+3. **"EADDRINUSE" error when starting the server**:
+
+   - Another process is already using port 3001
+   - Change the PORT in `backend/.env` to a different port (e.g., 3002)
+   - Or stop the process using port 3001:
+     - On Windows: `netstat -ano | findstr :3001` then `taskkill /PID <PID> /F`
+     - On macOS/Linux: `lsof -i :3001` then `kill -9 <PID>`
+
+4. **Frontend not connecting to backend**:
+
+   - Ensure both frontend and backend are running
+   - Check that the API calls in `frontend/components/SaveLoadSlips.tsx` and `frontend/pages/SavedSlips.tsx` point to the correct backend URL (configured via `VITE_API_BASE_URL` environment variable, defaulting to `http://localhost:3001`)
+   - Check browser console for CORS errors (should be handled by the backend)
+
+5. **Empty saved slips page**:
+   - This is normal when no slips have been saved yet
+   - Create and save a betting slip first
+
+## API Endpoints
+
+- `GET /api/betting-slips` - Get all betting slips
+- `POST /api/betting-slips` - Save a new betting slip
+- `GET /api/betting-slips/:id` - Get a specific betting slip
+- `PUT /api/betting-slips/:id` - Update a betting slip
+- `DELETE /api/betting-slips/:id` - Delete a betting slip
+
+## Testing
+
+- `npm run test:db` - Test database connection
+- `npm run test:api` - Test all API endpoints
+- `npm run init:db` - Initialize database schema
+
+## Technologies Used
+
+- React with TypeScript
+- Vite for build tooling
+- MySQL for database
+- Express.js for backend
+- Tailwind CSS for styling
+- shadcn/ui components
