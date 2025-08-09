@@ -265,3 +265,151 @@ This will create a sample betting slip with three matches and different statuses
 - Express.js for backend
 - Tailwind CSS for styling
 - shadcn/ui components
+
+## Hosting on Hostinger
+
+### Project Structure for Hostinger
+
+Your project is already well-structured for deployment, but we've added some additional files and configurations that will make it easier to deploy on Hostinger:
+
+### 1. Deployment Script
+
+We've created a `deploy.sh` file in the root directory that automates the deployment process.
+
+### 2. Startup Script
+
+We've created a `start.sh` file in the root directory that starts the application with PM2.
+
+### 3. Hostinger Environment Files
+
+We've created environment files for both backend and frontend with Hostinger-specific configurations:
+
+- `backend/.env.hostinger`
+- `frontend/.env.hostinger`
+
+### 4. PM2 Ecosystem Configuration
+
+We've created an `ecosystem.config.js` file for PM2 process management.
+
+### 5. Nginx Configuration
+
+We've created an `nginx.conf` file for setting up Nginx as a reverse proxy.
+
+### Hosting on Hostinger - Step-by-Step Guide
+
+#### Prerequisites:
+
+1. Hostinger VPS hosting plan
+2. SSH access to your VPS
+3. MySQL database access
+
+#### Deployment Steps:
+
+1. **Connect to your VPS via SSH:**
+
+   ```bash
+   ssh username@your-vps-ip
+   ```
+
+2. **Install Git if not already installed:**
+
+   ```bash
+   sudo apt update
+   sudo apt install git
+   ```
+
+3. **Clone your repository:**
+
+   ```bash
+   git clone https://github.com/your-username/smartbetgenerator.git
+   cd smartbetgenerator
+   ```
+
+4. **Set up environment variables:**
+
+   ```bash
+   cp backend/.env.hostinger backend/.env
+   cp frontend/.env.hostinger frontend/.env
+   ```
+
+5. **Update the .env files with your actual Hostinger database credentials**
+
+6. **Install dependencies and build:**
+
+   ```bash
+   # Install backend dependencies
+   cd backend
+   npm install
+
+   # Install frontend dependencies
+   cd ../frontend
+   npm install
+
+   # Build frontend
+   npm run build
+   ```
+
+7. **Initialize the database:**
+
+   ```bash
+   cd ../backend
+   npm run hostinger:db:init
+   ```
+
+8. **Start the application:**
+
+   ```bash
+   # Start backend
+   node server.js &
+
+   # Serve frontend (install serve first)
+   npm install -g serve
+   serve -s ../frontend/dist -l 8080
+   ```
+
+### Using PM2 for Process Management (Recommended)
+
+1. **Install PM2:**
+
+   ```bash
+   sudo npm install -g pm2
+   ```
+
+2. **Start the application with PM2:**
+   ```bash
+   pm2 start ecosystem.config.js
+   pm2 save
+   pm2 startup
+   ```
+
+### Setting Up Domain and SSL
+
+1. **Point your domain to your VPS IP address**
+
+2. **Install and configure Nginx as a reverse proxy:**
+
+   ```bash
+   sudo apt install nginx
+   ```
+
+3. **Copy the Nginx configuration:**
+
+   ```bash
+   sudo cp nginx.conf /etc/nginx/sites-available/smartbets
+   ```
+
+4. **Enable the site:**
+
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/smartbets /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
+
+5. **Install SSL certificate with Let's Encrypt:**
+   ```bash
+   sudo apt install certbot python3-certbot-nginx
+   sudo certbot --nginx -d yourdomain.com
+   ```
+
+With these configurations, your application will be ready for deployment on Hostinger VPS hosting. The backend will run on port 3001, and the frontend will be served on port 8080, with Nginx proxying requests appropriately.

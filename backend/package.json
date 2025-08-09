@@ -10,7 +10,9 @@
     "test:db": "node test-connection.js",
     "init:db": "node init-db.js",
     "test:api": "node test-api.js",
-    "create-sample": "node create-sample-slip.js"
+    "create-sample": "node create-sample-slip.js",
+    "hostinger:start": "NODE_ENV=production node server.js",
+    "hostinger:db:init": "NODE_ENV=production node init-db.js"
   },
   "dependencies": {
     "express": "^4.18.2",
