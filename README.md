@@ -8,6 +8,7 @@ This project is organized into two main directories:
 
 - `frontend/` - Contains all frontend code (React application)
 - `backend/` - Contains all backend code (Node.js/Express server)
+- `php-backend/` - Contains alternative PHP backend implementation
 
 ## Features
 
@@ -21,13 +22,15 @@ This project is organized into two main directories:
 
 ## Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js (v14 or higher) OR PHP (v7.4 or higher)
 - MySQL server (v5.7 or higher)
 - npm or yarn
 
-## Setup
+## Setup Options
 
-### 1. Database Setup
+### Option 1: Node.js/Express Backend (Default)
+
+#### 1. Database Setup
 
 1. Ensure MySQL server is installed and running on your system
 
@@ -55,7 +58,7 @@ This project is organized into two main directories:
    FLUSH PRIVILEGES;
    ```
 
-### 2. Backend Setup
+#### 2. Backend Setup
 
 1. Navigate to the backend directory:
 
@@ -97,7 +100,44 @@ This project is organized into two main directories:
    npm start
    ```
 
-### 3. Frontend Setup
+#### 3. Frontend Setup
+
+1. Navigate to the frontend directory:
+
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+### Option 2: PHP/MySQL Backend
+
+#### 1. Database Setup
+
+1. Ensure MySQL server is installed and running on your system
+
+2. Create a MySQL database named `smartbets` (same as above)
+
+3. Create a MySQL user and grant privileges (same as above)
+
+#### 2. PHP Backend Setup
+
+1. Place the contents of the `php-backend/` directory in your web server's document root or a subdirectory
+
+2. Update the database configuration in `php-backend/config/database.php` with your MySQL credentials
+
+3. Ensure your web server has PHP and MySQL support with URL rewriting enabled
+
+#### 3. Frontend Setup
 
 1. Navigate to the frontend directory:
 
@@ -118,6 +158,8 @@ This project is organized into two main directories:
 
 ## Running Both Frontend and Backend
 
+### For Node.js Backend
+
 To run both the frontend and backend simultaneously:
 
 1. Start the backend server:
@@ -128,6 +170,19 @@ To run both the frontend and backend simultaneously:
    ```
 
 2. In a separate terminal, start the frontend:
+
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+3. Open your browser to http://localhost:5173 to access the application
+
+### For PHP Backend
+
+1. Ensure your PHP backend is accessible through your web server
+
+2. Start the frontend:
 
    ```bash
    cd frontend
@@ -325,15 +380,15 @@ With these configurations, your application will be ready for deployment on Host
 1. **"Failed to fetch" errors**: This usually means the backend server is not running. Make sure to:
 
    - Start MySQL server on your system
-   - Run `npm start` in the `backend` directory
-   - Check that the server is running on port 3001
+   - Run `npm start` in the `backend` directory (for Node.js) or ensure PHP backend is accessible (for PHP)
+   - Check that the server is running on port 3001 (Node.js) or accessible through web server (PHP)
 
 2. **Database connection errors**:
 
    - Verify MySQL is installed and running
-   - Check that the database credentials in `backend/.env` are correct
+   - Check that the database credentials in `backend/.env` (Node.js) or `php-backend/config/database.php` (PHP) are correct
    - Ensure the `smartbets` database exists
-   - Run `npm run test:db` to test the database connection
+   - Run `npm run test:db` to test the database connection (Node.js only)
 
 3. **"EADDRINUSE" error when starting the server**:
 
@@ -346,7 +401,7 @@ With these configurations, your application will be ready for deployment on Host
 4. **Frontend not connecting to backend**:
 
    - Ensure both frontend and backend are running
-   - Check that the API calls in `frontend/components/SaveLoadSlips.tsx` and `frontend/pages/SavedSlips.tsx` point to the correct backend URL (configured via `VITE_API_BASE_URL` environment variable, defaulting to `http://localhost:3001`)
+   - Check that the API calls in `frontend/components/SaveLoadSlips.tsx` and `frontend/pages/SavedSlips.tsx` point to the correct backend URL (configured via `VITE_API_BASE_URL` environment variable, defaulting to `http://localhost:3001` for Node.js or appropriate URL for PHP)
    - Check browser console for CORS errors (should be handled by the backend)
 
 5. **Empty saved slips page**:
@@ -355,23 +410,37 @@ With these configurations, your application will be ready for deployment on Host
 
 ## API Endpoints
 
+### Node.js Backend
+
 - `GET /api/betting-slips` - Get all betting slips
 - `POST /api/betting-slips` - Save a new betting slip
 - `GET /api/betting-slips/:id` - Get a specific betting slip
 - `PUT /api/betting-slips/:id` - Update a betting slip
 - `DELETE /api/betting-slips/:id` - Delete a betting slip
 
+### PHP Backend
+
+All endpoints are accessed through `api.php` with a `path` parameter:
+
+- `GET /api.php?path=betting-slips` - Get all betting slips
+- `POST /api.php?path=betting-slips` - Save a new betting slip
+- `GET /api.php?path=betting-slips/{id}` - Get a specific betting slip by ID
+- `PUT /api.php?path=betting-slips/{id}` - Update a betting slip
+- `DELETE /api.php?path=betting-slips/{id}` - Delete a betting slip
+- `GET /api.php?path=betting-slips/analytics` - Get analytics data
+- `GET /api.php?path=health` - Health check endpoint
+
 ## Testing
 
-- `npm run test:db` - Test database connection
-- `npm run test:api` - Test all API endpoints
-- `npm run init:db` - Initialize database schema
+- `npm run test:db` - Test database connection (Node.js only)
+- `npm run test:api` - Test all API endpoints (Node.js only)
+- `npm run init:db` - Initialize database schema (Node.js only)
 
 ## Technologies Used
 
 - React with TypeScript
 - Vite for build tooling
 - MySQL for database
-- Express.js for backend
+- Express.js for Node.js backend OR PHP for PHP backend
 - Tailwind CSS for styling
 - shadcn/ui components
